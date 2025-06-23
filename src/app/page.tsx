@@ -35,28 +35,7 @@ export default function Home() {
   const [particles, setParticles] = useState<Array<{id: number, left: number, top: number}>>([]);
   const [fabOpen, setFabOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
-
-  // Testimonials data
-  const testimonials = [
-    {
-      quote: "Myla Bundle Ltd has transformed our approach to digital ventures. Their strategic insights have been invaluable.",
-      name: "Sarah Chen",
-      position: "CEO, TechFlow Solutions",
-      rating: 5
-    },
-    {
-      quote: "The level of professionalism and results-driven approach sets them apart in the industry.",
-      name: "Michael Rodriguez",
-      position: "Managing Director, Capital Ventures",
-      rating: 5
-    },
-    {
-      quote: "Exceptional service and innovative solutions that consistently deliver outstanding results.",
-      name: "Emma Thompson",
-      position: "Founder, Digital Dynamics",
-      rating: 5
-    }
-  ];
+  const [activeSection, setActiveSection] = useState('');
 
   // Services data
   const services = [
@@ -79,6 +58,11 @@ export default function Home() {
       title: "Capital Bundling",
       description: "Combining investor flows for efficient execution.",
       icon: <FaBriefcase className="w-6 h-6" />
+    },
+    {
+      title: "Global Supply Chain Solutions",
+      description: "Facilitating seamless cross-border commerce and international market access through strategic logistics partnerships and regulatory compliance.",
+      icon: <FaGlobe className="w-6 h-6" />
     }
   ];
 
@@ -91,11 +75,33 @@ export default function Home() {
     }));
     setParticles(particlePositions);
 
-    // Scroll progress indicator
+    // Scroll progress indicator and active section detection
     const handleScroll = () => {
       const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
       const progress = (window.scrollY / totalHeight) * 100;
       setScrollProgress(progress);
+
+      // Active section detection
+      const sections = ['about', 'services', 'partners', 'contact'];
+      const scrollPosition = window.scrollY + 100; // Offset for navbar
+
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const offsetTop = element.offsetTop;
+          const offsetHeight = element.offsetHeight;
+          
+          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+            setActiveSection(section);
+            break;
+          }
+        }
+      }
+
+      // If we're at the top, set active to empty (hero section)
+      if (scrollPosition < 100) {
+        setActiveSection('');
+      }
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -110,134 +116,119 @@ export default function Home() {
       theme === 'dark' ? 'bg-myla-black text-myla-white' : 'bg-myla-white text-myla-black'
     }`}>
       {/* Beautiful Navigation Bar */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      <nav className={`fixed z-50 transition-all duration-300 ${
         theme === 'dark' 
-          ? 'bg-myla-black/95 backdrop-blur-md border-b border-myla-gray-800/50' 
-          : 'bg-white/95 backdrop-blur-md border-b border-myla-gray-200/50'
+          ? 'bg-myla-black/20 backdrop-blur-2xl border border-white/10 shadow-2xl shadow-black/30' 
+          : 'bg-white/20 backdrop-blur-2xl border border-black/10 shadow-2xl shadow-gray-900/20'
+      } ${
+        // Mobile: floating with margins and rounded corners
+        ' top-4 left-4 right-4 rounded-2xl px-4 py-2' +
+        // Desktop: centered pill design
+        ' lg:top-4 lg:left-1/2 lg:transform lg:-translate-x-1/2 lg:rounded-full lg:px-6 lg:py-2 lg:mx-4 lg:max-w-4xl lg:w-full'
       }`}>
-        <div className="container-custom">
-          <div className="flex items-center justify-between h-14 lg:h-16">
-            {/* Logo with CAC Verified */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-              className="flex items-center"
-            >
-              <a href="#" className="flex items-center space-x-3 group">
-                <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 ${
-                  theme === 'dark' 
-                    ? 'bg-gradient-to-br from-myla-blue-600 to-myla-blue-700 shadow-lg shadow-myla-blue-600/30' 
-                    : 'bg-gradient-to-br from-myla-blue-500 to-myla-blue-600 shadow-lg shadow-myla-blue-500/30'
+        <div className="flex items-center justify-between h-12 lg:h-14">
+          {/* Logo with CAC Verified */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="flex items-center"
+          >
+            <a href="#" className="flex items-center space-x-3 group">
+              <div className={`w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 ${
+                theme === 'dark' 
+                  ? 'bg-gradient-to-br from-myla-blue-600 to-myla-blue-700 shadow-lg shadow-myla-blue-600/30' 
+                  : 'bg-gradient-to-br from-myla-blue-500 to-myla-blue-600 shadow-lg shadow-myla-blue-500/30'
+              }`}>
+                <FaBuilding className="w-4 h-4 md:w-5 md:h-5 text-white" />
+              </div>
+              <div className="block">
+                <div className={`font-bold text-base md:text-lg ${
+                  theme === 'dark' ? 'text-white' : 'text-myla-black'
                 }`}>
-                  <FaBuilding className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                  Myla Bundle Ltd
                 </div>
-                <div>
-                  <div className={`font-bold text-lg md:text-xl ${
-                    theme === 'dark' ? 'text-white' : 'text-myla-black'
-                  }`}>
-                    Myla Bundle Ltd
-                  </div>
-                  <div className={`text-xs font-medium ${
-                    theme === 'dark' ? 'text-myla-blue-400' : 'text-myla-blue-600'
-                  }`}>
-                    CAC Verified
-                  </div>
+                <div className={`text-xs font-medium ${
+                  theme === 'dark' ? 'text-myla-blue-400' : 'text-myla-blue-600'
+                }`}>
+                  CAC Verified
                 </div>
-              </a>
-            </motion.div>
+              </div>
+            </a>
+          </motion.div>
 
-            {/* Desktop Navigation with Icons */}
-            <div className="hidden lg:flex items-center space-x-4">
-              {[
-                { href: "#about", label: "About", icon: FaInfoCircle },
-                { href: "#services", label: "Services", icon: FaCogs },
-                { href: "#partners", label: "Partners", icon: FaHandshake },
-                { href: "#contact", label: "Contact", icon: FaEnvelope }
-              ].map((item, index) => (
+          {/* Desktop Navigation with Icons */}
+          <div className="hidden lg:flex items-center space-x-2">
+            {[
+              { href: "#about", label: "About", icon: FaInfoCircle },
+              { href: "#services", label: "Services", icon: FaCogs },
+              { href: "#partners", label: "Partners", icon: FaHandshake },
+              { href: "#contact", label: "Contact", icon: FaEnvelope }
+            ].map((item, index) => {
+              const isActive = activeSection === item.href.replace('#', '');
+              return (
                 <motion.a
                   key={item.label}
                   href={item.href}
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.1 + index * 0.1 }}
-                  className={`group relative flex items-center space-x-2 px-4 py-2 rounded-xl font-medium text-sm transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-myla-blue-500 focus:ring-offset-2 ${
-                    theme === 'dark' 
-                      ? 'text-myla-gray-300 hover:text-white hover:bg-myla-gray-800/50 focus:bg-myla-gray-800/50' 
-                      : 'text-myla-gray-600 hover:text-myla-black hover:bg-myla-gray-100/50 focus:bg-myla-gray-100/50'
+                  className={`group relative flex items-center space-x-2 px-3 py-2 rounded-full font-medium text-sm transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-myla-blue-500 focus:ring-offset-2 ${
+                    isActive
+                      ? theme === 'dark'
+                        ? 'text-white bg-myla-blue-600/30 border border-myla-blue-500/50'
+                        : 'text-myla-black bg-myla-blue-100/80 border border-myla-blue-300/50'
+                      : theme === 'dark' 
+                        ? 'text-myla-gray-300 hover:text-white hover:bg-myla-gray-800/50 focus:bg-myla-gray-800/50' 
+                        : 'text-myla-gray-600 hover:text-myla-black hover:bg-myla-gray-100/50 focus:bg-myla-gray-100/50'
                   }`}
                 >
-                  <item.icon className="w-4 h-4 transition-transform duration-300 group-hover:scale-110" />
+                  <item.icon className={`w-4 h-4 transition-transform duration-300 group-hover:scale-110 ${
+                    isActive ? 'text-myla-blue-400' : ''
+                  }`} />
                   <span>{item.label}</span>
-                  {/* Active Indicator */}
-                  <motion.div
-                    className={`absolute bottom-0 left-1/2 w-0 h-0.5 ${
-                      theme === 'dark' ? 'bg-myla-blue-400' : 'bg-myla-blue-600'
-                    }`}
-                    initial={{ width: 0, x: '-50%' }}
-                    whileHover={{ width: '80%', x: '-50%' }}
-                    transition={{ duration: 0.3 }}
-                  />
                 </motion.a>
-              ))}
-            </div>
+              );
+            })}
+          </div>
 
-            {/* Right Side Actions */}
-            <div className="flex items-center space-x-3">
-              {/* Theme Toggle */}
-              <motion.button
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: 0.5 }}
-                onClick={toggleTheme}
-                whileHover={{ scale: 1.1, rotate: 180 }}
-                whileTap={{ scale: 0.9 }}
-                className={`w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
-                  theme === 'dark' 
-                    ? 'bg-myla-gray-800 hover:bg-myla-gray-700 text-myla-gray-300 hover:text-myla-yellow-400' 
-                    : 'bg-myla-gray-100 hover:bg-myla-gray-200 text-myla-gray-600 hover:text-myla-orange-500'
-                }`}
-                aria-label="Toggle theme"
-              >
-                {theme === 'dark' ? <FaSun className="w-4 h-4 md:w-5 md:h-5" /> : <FaMoon className="w-4 h-4 md:w-5 md:h-5" />}
-              </motion.button>
+          {/* Right Side Actions */}
+          <div className="flex items-center space-x-2">
+            {/* Theme Toggle */}
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              onClick={toggleTheme}
+              whileHover={{ scale: 1.1, rotate: 180 }}
+              whileTap={{ scale: 0.9 }}
+              className={`w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center transition-all duration-300 ${
+                theme === 'dark' 
+                  ? 'bg-myla-gray-800 hover:bg-myla-gray-700 text-myla-gray-300 hover:text-myla-yellow-400' 
+                  : 'bg-myla-gray-100 hover:bg-myla-gray-200 text-myla-gray-600 hover:text-myla-orange-500'
+              }`}
+              aria-label="Toggle theme"
+            >
+              {theme === 'dark' ? <FaSun className="w-4 h-4" /> : <FaMoon className="w-4 h-4" />}
+            </motion.button>
 
-              {/* Contact Button */}
-              <motion.a
-                href="#contact"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: 0.6 }}
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className={`hidden md:flex items-center space-x-2 px-4 py-2 rounded-xl font-medium text-sm transition-all duration-300 shadow-lg ${
-                  theme === 'dark' 
-                    ? 'bg-gradient-to-r from-myla-blue-600 to-myla-blue-700 hover:from-myla-blue-700 hover:to-myla-blue-800 text-white shadow-myla-blue-600/30 hover:shadow-myla-blue-600/50' 
-                    : 'bg-gradient-to-r from-myla-blue-500 to-myla-blue-600 hover:from-myla-blue-600 hover:to-myla-blue-700 text-white shadow-myla-blue-500/30 hover:shadow-myla-blue-500/50'
-                }`}
-              >
-                <FaEnvelope className="w-4 h-4" />
-                <span>Get In Touch</span>
-              </motion.a>
-
-              {/* Mobile Menu Button */}
-              <motion.button
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: 0.7 }}
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                className={`lg:hidden w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
-                  theme === 'dark' 
-                    ? 'bg-myla-gray-800 hover:bg-myla-gray-700 text-myla-gray-300' 
-                    : 'bg-myla-gray-100 hover:bg-myla-gray-200 text-myla-gray-600'
-                }`}
-                aria-label="Toggle mobile menu"
-              >
-                {mobileMenuOpen ? <FaTimes className="w-5 h-5 md:w-6 md:h-6" /> : <FaBars className="w-5 h-5 md:w-6 md:h-6" />}
-              </motion.button>
-            </div>
+            {/* Mobile Menu Button */}
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.7 }}
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className={`lg:hidden w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center transition-all duration-300 ${
+                theme === 'dark' 
+                  ? 'bg-myla-gray-800 hover:bg-myla-gray-700 text-myla-gray-300' 
+                  : 'bg-myla-gray-100 hover:bg-myla-gray-200 text-myla-gray-600'
+              }`}
+              aria-label="Toggle mobile menu"
+            >
+              {mobileMenuOpen ? <FaTimes className="w-4 h-4 md:w-5 md:h-5" /> : <FaBars className="w-4 h-4 md:w-5 md:h-5" />}
+            </motion.button>
           </div>
         </div>
 
@@ -249,20 +240,21 @@ export default function Home() {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className={`lg:hidden border-t ${
+              className={`lg:hidden border-t mt-2 pt-4 ${
                 theme === 'dark' 
-                  ? 'bg-myla-black/95 border-myla-gray-800/50' 
-                  : 'bg-white/95 border-myla-gray-200/50'
+                  ? 'border-white/10' 
+                  : 'border-black/10'
               }`}
             >
-              <div className="container-custom py-6">
-                <div className="space-y-3">
-                  {[
-                    { href: "#about", label: "About", icon: FaInfoCircle, description: "Learn about our company" },
-                    { href: "#services", label: "Services", icon: FaCogs, description: "What we offer" },
-                    { href: "#partners", label: "Partners", icon: FaHandshake, description: "Our partnerships" },
-                    { href: "#contact", label: "Contact", icon: FaEnvelope, description: "Get in touch" }
-                  ].map((item, index) => (
+              <div className="space-y-3">
+                {[
+                  { href: "#about", label: "About", icon: FaInfoCircle, description: "Learn about our company" },
+                  { href: "#services", label: "Services", icon: FaCogs, description: "What we offer" },
+                  { href: "#partners", label: "Partners", icon: FaHandshake, description: "Our partnerships" },
+                  { href: "#contact", label: "Contact", icon: FaEnvelope, description: "Get in touch" }
+                ].map((item, index) => {
+                  const isActive = activeSection === item.href.replace('#', '');
+                  return (
                     <motion.a
                       key={item.label}
                       href={item.href}
@@ -270,21 +262,29 @@ export default function Home() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.3, delay: index * 0.1 }}
                       onClick={() => setMobileMenuOpen(false)}
-                      className={`group flex items-center space-x-3 p-4 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-myla-blue-500 focus:ring-offset-2 ${
-                        theme === 'dark' 
-                          ? 'text-myla-gray-300 hover:text-myla-white hover:bg-myla-gray-800/50 focus:bg-myla-gray-800/50' 
-                          : 'text-myla-gray-600 hover:text-myla-black hover:bg-myla-gray-100/50 focus:bg-myla-gray-100/50'
+                      className={`group flex items-center space-x-3 p-3 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-myla-blue-500 focus:ring-offset-2 ${
+                        isActive
+                          ? theme === 'dark'
+                            ? 'text-white bg-myla-blue-600/30 border border-myla-blue-500/50'
+                            : 'text-myla-black bg-myla-blue-100/80 border border-myla-blue-300/50'
+                          : theme === 'dark' 
+                            ? 'text-myla-gray-300 hover:text-myla-white hover:bg-myla-gray-800/50 focus:bg-myla-gray-800/50' 
+                            : 'text-myla-gray-600 hover:text-myla-black hover:bg-myla-gray-100/50 focus:bg-myla-gray-100/50'
                       }`}
                     >
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 ${
-                        theme === 'dark' ? 'bg-myla-blue-600/20' : 'bg-myla-blue-100'
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 ${
+                        isActive 
+                          ? theme === 'dark' ? 'bg-myla-blue-600/50' : 'bg-myla-blue-200'
+                          : theme === 'dark' ? 'bg-myla-blue-600/20' : 'bg-myla-blue-100'
                       }`}>
-                        <item.icon className={`w-5 h-5 ${
-                          theme === 'dark' ? 'text-myla-blue-400' : 'text-myla-blue-600'
+                        <item.icon className={`w-4 h-4 ${
+                          isActive 
+                            ? theme === 'dark' ? 'text-myla-blue-300' : 'text-myla-blue-700'
+                            : theme === 'dark' ? 'text-myla-blue-400' : 'text-myla-blue-600'
                         }`} />
                       </div>
                       <div className="flex-1">
-                        <div className="font-semibold text-base">{item.label}</div>
+                        <div className="font-semibold text-sm">{item.label}</div>
                         <div className={`text-xs ${
                           theme === 'dark' ? 'text-myla-gray-400' : 'text-myla-gray-500'
                         }`}>
@@ -295,38 +295,14 @@ export default function Home() {
                         animate={{ x: [0, 5, 0] }}
                         transition={{ duration: 1.5, repeat: Infinity, delay: index * 0.2 }}
                         className={`w-2 h-2 rounded-full ${
-                          theme === 'dark' ? 'bg-myla-blue-400' : 'bg-myla-blue-600'
+                          isActive 
+                            ? theme === 'dark' ? 'bg-myla-blue-300' : 'bg-myla-blue-700'
+                            : theme === 'dark' ? 'bg-myla-blue-400' : 'bg-myla-blue-600'
                         }`}
                       />
                     </motion.a>
-                  ))}
-                  
-                  {/* Mobile Contact CTA */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: 0.4 }}
-                    className={`mt-6 p-4 rounded-xl ${
-                      theme === 'dark' 
-                        ? 'bg-myla-gray-800/30 border border-myla-gray-700/50' 
-                        : 'bg-myla-gray-100/30 border border-myla-gray-200/50'
-                    }`}
-                  >
-                    <h4 className="font-semibold mb-3">Ready to get started?</h4>
-                    <a
-                      href="#contact"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={`flex items-center justify-center space-x-2 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300 shadow-lg ${
-                        theme === 'dark' 
-                          ? 'bg-gradient-to-r from-myla-blue-600 to-myla-blue-700 hover:from-myla-blue-700 hover:to-myla-blue-800 text-white shadow-myla-blue-600/30 hover:shadow-myla-blue-600/50' 
-                          : 'bg-gradient-to-r from-myla-blue-500 to-myla-blue-600 hover:from-myla-blue-600 hover:to-myla-blue-700 text-white shadow-myla-blue-500/30 hover:shadow-myla-blue-500/50'
-                      }`}
-                    >
-                      <FaEnvelope className="w-4 h-4" />
-                      <span>Get In Touch</span>
-                    </a>
-                  </motion.div>
-                </div>
+                  );
+                })}
               </div>
             </motion.div>
           )}
@@ -334,7 +310,7 @@ export default function Home() {
       </nav>
 
       {/* Page Content with Proper Top Spacing */}
-      <div className="pt-20 lg:pt-24">
+      <div className="">
         {/* Hero Section */}
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
           {/* Background Effects */}
@@ -438,7 +414,7 @@ export default function Home() {
             />
           </div>
 
-          <div className="container-custom text-center px-4 relative z-10 pb-16">
+          <div className="container-custom text-center px-4 relative z-10 pb-16 pt-32">
             {/* Professional Hero Content */}
             <div className="relative z-10 text-center max-w-5xl mx-auto px-4">
               {/* Company Badge */}
@@ -448,8 +424,8 @@ export default function Home() {
                 transition={{ duration: 0.8, delay: 0.1 }}
                 className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium mb-6 md:mb-8 ${
                   theme === 'dark' 
-                    ? 'bg-myla-blue-600/20 text-myla-blue-300 border border-myla-blue-500/30' 
-                    : 'bg-myla-blue-50 text-myla-blue-700 border border-myla-blue-200'
+                    ? 'bg-myla-blue-600/20 backdrop-blur-xl text-myla-blue-300 border border-white/10 shadow-lg shadow-myla-blue-600/20' 
+                    : 'bg-myla-blue-50/80 backdrop-blur-xl text-myla-blue-700 border border-black/10 shadow-lg shadow-myla-blue-500/20'
                 }`}
               >
                 <FaShieldAlt className="w-4 h-4 mr-2" />
@@ -513,26 +489,13 @@ export default function Home() {
                 href="#about" 
                 whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.98 }}
-                className={`w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold text-sm transition-all duration-300 shadow-lg ${
+                className={`w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold text-sm transition-all duration-300 ${
                   theme === 'dark' 
-                    ? 'bg-gradient-to-r from-myla-blue-600 to-myla-blue-700 text-white shadow-myla-blue-600/30 hover:shadow-myla-blue-600/50' 
-                    : 'bg-gradient-to-r from-myla-blue-500 to-myla-blue-600 text-white shadow-myla-blue-500/30 hover:shadow-myla-blue-500/50'
+                    ? 'bg-myla-blue-600/30 backdrop-blur-xl text-white border border-white/10 shadow-2xl shadow-myla-blue-600/30 hover:bg-myla-blue-600/50 hover:shadow-myla-blue-600/50' 
+                    : 'bg-myla-blue-500/30 backdrop-blur-xl text-white border border-black/10 shadow-2xl shadow-myla-blue-500/30 hover:bg-myla-blue-500/50 hover:shadow-myla-blue-500/50'
                 }`}
               >
                 Learn More
-              </motion.a>
-              
-              <motion.a 
-                href="#contact" 
-                whileHover={{ scale: 1.02, y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                className={`w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold text-sm transition-all duration-300 border-2 ${
-                  theme === 'dark' 
-                    ? 'border-myla-gray-600 text-myla-gray-300 hover:border-myla-blue-500 hover:text-myla-blue-400' 
-                    : 'border-myla-gray-300 text-myla-gray-700 hover:border-myla-blue-500 hover:text-myla-blue-600'
-                }`}
-              >
-                Get In Touch
               </motion.a>
             </motion.div>
 
@@ -554,16 +517,16 @@ export default function Home() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 1.2 + index * 0.1 }}
                   whileHover={{ scale: 1.05, y: -5 }}
-                  className={`text-center p-4 sm:p-6 rounded-2xl backdrop-blur-sm border ${
+                  className={`text-center p-4 sm:p-6 rounded-2xl backdrop-blur-xl border ${
                     theme === 'dark' 
-                      ? 'bg-white/5 border-white/10 hover:bg-white/10' 
-                      : 'bg-black/5 border-black/10 hover:bg-black/10'
+                      ? 'bg-white/10 border-white/10 hover:bg-white/20 shadow-2xl shadow-black/20' 
+                      : 'bg-black/10 border-black/10 hover:bg-black/20 shadow-2xl shadow-gray-900/20'
                   }`}
                 >
                   <div className={`w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 sm:mb-4 rounded-xl flex items-center justify-center ${
                     theme === 'dark' 
-                      ? 'bg-myla-blue-600/20 text-myla-blue-400' 
-                      : 'bg-myla-blue-100 text-myla-blue-600'
+                      ? 'bg-myla-blue-600/30 backdrop-blur-sm text-myla-blue-400 border border-white/10' 
+                      : 'bg-myla-blue-100/80 backdrop-blur-sm text-myla-blue-600 border border-black/10'
                   }`}>
                     <stat.icon className="w-5 h-5 sm:w-6 sm:h-6" />
                   </div>
@@ -655,49 +618,61 @@ export default function Home() {
             </motion.h2>
             
             {/* Service Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-              {services.map((service) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 md:gap-8">
+              {services.map((service, index) => (
                 <motion.div
                   key={service.title}
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6 }}
-                  className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700 group"
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  whileHover={{ scale: 1.02, y: -5 }}
+                  className={`group relative p-6 rounded-2xl backdrop-blur-xl border transition-all duration-300 ${
+                    theme === 'dark' 
+                      ? 'bg-white/10 border-white/10 hover:bg-white/20 shadow-2xl shadow-black/20' 
+                      : 'bg-black/10 border-black/10 hover:bg-black/20 shadow-2xl shadow-gray-900/20'
+                  }`}
                 >
-                  {/* Gradient Border Effect */}
+                  {/* Animated Background Gradient */}
                   <motion.div 
-                    className={`absolute inset-0 rounded-2xl bg-gradient-to-r from-myla-blue-500 to-myla-gold-500 opacity-0 group-hover:opacity-20 transition-opacity duration-500`}
-                    whileHover={{ opacity: 0.2 }}
+                    className="absolute inset-0 rounded-2xl bg-gradient-to-br from-myla-blue-500/20 to-myla-gold-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    whileHover={{ opacity: 1 }}
                   />
                   
-                  {/* Icon with Enhanced Styling */}
+                  {/* Icon with Glassmorphism */}
                   <motion.div
                     whileHover={{ rotate: 360, scale: 1.1 }}
                     transition={{ duration: 0.5 }}
-                    className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center mb-4 md:mb-6 relative z-10 bg-gradient-to-br from-myla-blue-500 to-myla-blue-600 shadow-lg shadow-myla-blue-500/30`}
+                    className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 relative z-10 ${
+                      theme === 'dark' 
+                        ? 'bg-myla-blue-600/30 text-myla-blue-400 border border-white/10' 
+                        : 'bg-myla-blue-100/80 text-myla-blue-600 border border-black/10'
+                    }`}
                   >
-                    <div className="text-white">
-                      {service.icon}
-                    </div>
+                    {service.icon}
                   </motion.div>
                   
                   {/* Content */}
                   <div className="relative z-10">
-                    <h3 className="text-lg md:text-xl font-bold mb-3 md:mb-4 group-hover:text-myla-blue-600 transition-colors duration-300">
+                    <h3 className={`text-lg font-bold mb-3 group-hover:text-myla-blue-400 transition-colors duration-300 ${
+                      theme === 'dark' ? 'text-white' : 'text-myla-black'
+                    }`}>
                       {service.title}
                     </h3>
-                    <p className={`text-sm md:text-base leading-relaxed ${
+                    <p className={`text-sm leading-relaxed ${
                       theme === 'dark' ? 'text-myla-gray-300' : 'text-myla-gray-600'
                     }`}>
                       {service.description}
                     </p>
                   </div>
 
-                  {/* Hover Effect Overlay */}
+                  {/* Hover Effect Indicator */}
                   <motion.div
-                    initial={{ opacity: 0 }}
-                    whileHover={{ opacity: 1 }}
-                    className={`absolute inset-0 rounded-2xl bg-gradient-to-br from-myla-blue-600/10 to-myla-blue-800/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+                    className={`absolute bottom-0 left-1/2 w-0 h-1 rounded-full ${
+                      theme === 'dark' ? 'bg-myla-blue-400' : 'bg-myla-blue-600'
+                    }`}
+                    initial={{ width: 0, x: '-50%' }}
+                    whileHover={{ width: '80%', x: '-50%' }}
+                    transition={{ duration: 0.3 }}
                   />
                 </motion.div>
               ))}
@@ -815,84 +790,83 @@ export default function Home() {
               </div>
             </motion.div>
 
-            {/* Testimonials Section */}
+            {/* Core Values Section */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
               viewport={{ once: true }}
             >
-              <h3 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12">What Our Partners Say</h3>
+              <h3 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12">Our Core Values</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                {testimonials.map((testimonial) => (
+                {[
+                  {
+                    title: "Excellence",
+                    description: "We pursue excellence in every venture, maintaining the highest standards of quality and performance across all our operations.",
+                    icon: <FaStar className="w-6 h-6" />
+                  },
+                  {
+                    title: "Innovation",
+                    description: "Constantly pushing boundaries and embracing cutting-edge solutions to create sustainable value for our partners.",
+                    icon: <FaLightbulb className="w-6 h-6" />
+                  },
+                  {
+                    title: "Integrity",
+                    description: "Building trust through transparent operations, ethical practices, and unwavering commitment to our promises.",
+                    icon: <FaShieldAlt className="w-6 h-6" />
+                  },
+                  {
+                    title: "Efficiency",
+                    description: "Optimizing resources and processes to deliver maximum value with minimal waste and optimal capital utilization.",
+                    icon: <FaCogs className="w-6 h-6" />
+                  },
+                  {
+                    title: "Partnership",
+                    description: "Fostering long-term relationships built on mutual success, shared vision, and collaborative growth strategies.",
+                    icon: <FaHandshake className="w-6 h-6" />
+                  },
+                  {
+                    title: "Sustainability",
+                    description: "Creating lasting impact through sustainable business models that benefit stakeholders and communities.",
+                    icon: <FaGlobe className="w-6 h-6" />
+                  }
+                ].map((value, index) => (
                   <motion.div
-                    key={testimonial.name}
+                    key={value.title}
                     initial={{ opacity: 0, y: 50 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                    className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg"
+                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                    whileHover={{ scale: 1.02, y: -5 }}
+                    className={`p-6 rounded-2xl backdrop-blur-xl border ${
+                      theme === 'dark' 
+                        ? 'bg-white/10 border-white/10 hover:bg-white/20 shadow-2xl shadow-black/20' 
+                        : 'bg-black/10 border-black/10 hover:bg-black/20 shadow-2xl shadow-gray-900/20'
+                    }`}
                   >
-                    {/* Quote Icon */}
+                    {/* Icon */}
                     <motion.div
-                      initial={{ opacity: 0, scale: 0 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.1 }}
-                      className={`absolute -top-3 -left-3 w-8 h-8 rounded-full flex items-center justify-center ${
+                      whileHover={{ rotate: 360, scale: 1.1 }}
+                      transition={{ duration: 0.5 }}
+                      className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${
                         theme === 'dark' 
-                          ? 'bg-myla-gold-500 text-white' 
-                          : 'bg-myla-gold-400 text-white'
+                          ? 'bg-myla-blue-600/30 text-myla-blue-400 border border-white/10' 
+                          : 'bg-myla-blue-100/80 text-myla-blue-600 border border-black/10'
                       }`}
                     >
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
-                      </svg>
+                      {value.icon}
                     </motion.div>
 
-                    <div className="mt-4">
-                      <p className={`text-sm md:text-base leading-relaxed mb-4 ${
-                        theme === 'dark' ? 'text-myla-gray-300' : 'text-myla-gray-600'
-                      }`}>
-                        &ldquo;{testimonial.quote}&rdquo;
-                      </p>
-                      
-                      <div className="flex items-center">
-                        <div className={`w-10 h-10 rounded-full bg-gradient-to-br from-myla-blue-500 to-myla-gold-500 flex items-center justify-center text-white font-bold text-sm mr-3`}>
-                          {testimonial.name.charAt(0)}
-                        </div>
-                        <div>
-                          <h4 className={`font-semibold ${
-                            theme === 'dark' ? 'text-white' : 'text-black'
-                          }`}>
-                            {testimonial.name}
-                          </h4>
-                          <p className={`text-xs ${
-                            theme === 'dark' ? 'text-myla-gray-400' : 'text-myla-gray-500'
-                          }`}>
-                            {testimonial.position}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Star Rating */}
-                    <div className="flex items-center mt-3">
-                      {[...Array(5)].map((_, i) => (
-                        <motion.svg
-                          key={i}
-                          initial={{ opacity: 0, scale: 0 }}
-                          whileInView={{ opacity: 1, scale: 1 }}
-                          transition={{ delay: 0.1 + i * 0.1 }}
-                          className={`w-4 h-4 ${
-                            i < testimonial.rating 
-                              ? 'text-myla-gold-400 fill-current' 
-                              : 'text-myla-gray-400'
-                          }`}
-                          viewBox="0 0 20 20"
-                        >
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </motion.svg>
-                      ))}
-                    </div>
+                    {/* Content */}
+                    <h4 className={`text-lg font-bold mb-3 ${
+                      theme === 'dark' ? 'text-white' : 'text-myla-black'
+                    }`}>
+                      {value.title}
+                    </h4>
+                    <p className={`text-sm leading-relaxed ${
+                      theme === 'dark' ? 'text-myla-gray-300' : 'text-myla-gray-600'
+                    }`}>
+                      {value.description}
+                    </p>
                   </motion.div>
                 ))}
               </div>
@@ -938,8 +912,7 @@ export default function Home() {
               viewport={{ once: true }}
               className={`text-center text-lg md:text-xl max-w-3xl mx-auto mb-12 md:mb-16 ${
                 theme === 'dark' ? 'text-myla-gray-300' : 'text-myla-gray-600'
-              }`}
-            >
+              }`}>
               For private inquiries, collaborations, or partnerships. 
               We&apos;re here to discuss your vision and explore opportunities.
             </motion.p>
